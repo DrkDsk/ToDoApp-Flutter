@@ -16,8 +16,6 @@ class AuthDatabase {
   }
 
   void updateDatabase(){
-    print("token_here:");
-    print(token);
     _myBox.put("TOKEN", token);
   }
 }

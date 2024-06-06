@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:to_do_app/data/databases/notes.dart';
-import 'package:to_do_app/data/services/api_service.dart';
+import 'package:to_do_app/data/providers/auth_provider.dart';
 import 'package:to_do_app/ui/screens/home.dart';
 import 'package:to_do_app/ui/screens/login.dart';
 import 'package:to_do_app/utils/box.dart';
@@ -19,20 +20,23 @@ class _AuthCheckState extends State<AuthCheck> {
   bool isAuthenticated = false;
   final box = Hive.box(authBoxName);
   AuthDatabase database = AuthDatabase();
-  ApiService apiService = ApiService();
+  late AuthProvider authProvider;
 
   @override
   void initState() {
     super.initState();
+    authProvider = Provider.of<AuthProvider>(context, listen: false);
     checkAuth();
   }
 
   Future<void> checkAuth() async {
+    final token = box.get('TOKEN');
 
-    if (box.get('TOKEN') == null) {
-      print("not valid");
+    if (token == null) {
       database.createInitialData();
     } else {
+      bool isValid = await authProvider.validateToken(token);
+      isAuthenticated = isValid;
       database.loadData();
     }
 
@@ -44,7 +48,10 @@ class _AuthCheckState extends State<AuthCheck> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const CircularProgressIndicator();
+      return Scaffold(
+        backgroundColor: Colors.yellow.shade300,
+        body: const CircularProgressIndicator(),
+      );
     }
 
     if (!isAuthenticated) {

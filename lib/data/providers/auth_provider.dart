@@ -28,4 +28,9 @@ class AuthProvider extends ChangeNotifier {
     String token = await apiService.login(email, password);
     return token;
   }
+
+  Future<bool> validateToken(String token)  async{
+    bool validated = await apiService.verifyToken(token);
+    return validated;
+  }
 }

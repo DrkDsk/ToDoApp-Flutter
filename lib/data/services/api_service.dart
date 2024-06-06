@@ -26,17 +26,21 @@ class ApiService {
   }
 
   Future<bool> verifyToken(String token) async {
-    final response = await dio.get(
-      'https://dummyjson.com/auth/me',
-      options: Options(
-        headers: {'Authorization': 'Bearer $token'}
-      )
-    );
+    try {
+      final response = await dio.get(
+          'https://dummyjson.com/auth/me',
+          options: Options(
+              headers: {'Authorization': 'Bearer $token'}
+          )
+      );
 
-    if (response.statusCode == 200) {
-      final isValid = response.data['user'];
-      return isValid;
-    } else {
+      if (response.statusCode == 200) {
+        String isValid = response.data['username'];
+        return isValid.isNotEmpty;
+      } else {
+        return false;
+      }
+    } catch (exception) {
       return false;
     }
   }
