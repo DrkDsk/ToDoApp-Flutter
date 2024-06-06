@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-class ToDoTile extends StatelessWidget {
+class ToDoListView extends StatelessWidget {
 
   final String taskName;
   final bool taskCompleted;
   Function(bool?)? onChanged;
   Function(BuildContext)? deleteFunction;
 
-   ToDoTile({
+   ToDoListView({
     super.key,
     required this.taskName,
     required this.taskCompleted,

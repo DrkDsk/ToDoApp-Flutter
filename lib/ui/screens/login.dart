@@ -1,16 +1,50 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:to_do_app/ui/styles.dart';
+import 'package:provider/provider.dart';
+import 'package:to_do_app/data/databases/notes.dart';
+import 'package:to_do_app/data/providers/auth_provider.dart';
+import 'package:to_do_app/ui/resources/styles.dart';
+import 'package:to_do_app/ui/screens/home.dart';
 import 'package:to_do_app/ui/widgets/background_image.dart';
+import 'package:to_do_app/ui/widgets/password_input.dart';
+import 'package:to_do_app/ui/widgets/text_input.dart';
+import 'package:to_do_app/utils/box.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+
+  final box = Hive.box(authBoxName);
+  AuthDatabase database = AuthDatabase();
+  late AuthProvider authProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    authProvider = Provider.of<AuthProvider>(context, listen: false);
+  }
+
+  Future<void> handleSubmitLogin() async {
+    String token = await authProvider.login(authProvider.emailText, authProvider.passwordText);
+    if(token.isNotEmpty) {
+      authProvider.setAuthenticated(true);
+      database.token = token;
+      database.updateDatabase();
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+
     return Stack(
       children: [
-         const BackgroundImage(),
+        const BackgroundImage(),
         Scaffold(
           backgroundColor: Colors.transparent,
           body: SafeArea(
@@ -47,7 +81,7 @@ class LoginScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8)
                           ),
                           child: MaterialButton(
-                            onPressed: () {},
+                            onPressed: handleSubmitLogin,
                             child: Text(
                               "Login",
                               style: bodyTextStyle,
@@ -64,92 +98,6 @@ class LoginScreen extends StatelessWidget {
           ),
         )
       ],
-    );
-  }
-}
-
-class TextInput extends StatelessWidget {
-
-  final String hintText;
-  final IconData iconData;
-  final TextInputType textInputType;
-
-  const TextInput({
-    super.key,
-    required this.hintText,
-    required this.iconData,
-    required this.textInputType,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.grey[700]?.withOpacity(0.6),
-        borderRadius: BorderRadius.circular(8)
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: TextField(
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            hintText: hintText,
-            prefixIcon: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Icon(
-                iconData,
-                size: 25,
-                color: Colors.white,
-              ),
-            ),
-            hintStyle: bodyTextStyle
-          ),
-          style: inputTextStyle,
-          keyboardType: textInputType,
-        ),
-      ),
-    );
-  }
-}
-
-class PasswordInput extends StatelessWidget {
-
-  final String hintText;
-  final IconData iconData;
-
-  const PasswordInput({
-    super.key,
-    required this.hintText,
-    required this.iconData,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          color: Colors.grey[700]?.withOpacity(0.6),
-          borderRadius: BorderRadius.circular(8)
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: TextField(
-          decoration: InputDecoration(
-              border: InputBorder.none,
-              hintText: hintText,
-              prefixIcon: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Icon(
-                  iconData,
-                  size: 25,
-                  color: Colors.white,
-                ),
-              ),
-              hintStyle: bodyTextStyle
-          ),
-          style: inputTextStyle,
-          obscureText: true,
-        ),
-      ),
     );
   }
 }

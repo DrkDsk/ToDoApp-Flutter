@@ -17,5 +17,4 @@ class ToDoDatabase {
   void updateDatabase(){
     _myBox.put("TODOLIST", toDoList);
   }
-
 }

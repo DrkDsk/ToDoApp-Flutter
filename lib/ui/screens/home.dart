@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:to_do_app/data/database.dart';
 import 'package:to_do_app/utils/box.dart';
-import 'package:to_do_app/ui/dialog_box.dart';
-import 'package:to_do_app/ui/todo_tile.dart';
+import 'package:to_do_app/ui/widgets/dialog_box.dart';
+import 'package:to_do_app/ui/widgets/todo_listview.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -69,11 +69,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.yellow[200],
-      appBar: AppBar(
-        backgroundColor: Colors.yellow[200],
-        title: const Text("To Do"),
-        elevation: 0,
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: createNewTask,
         child: const Icon(Icons.add),
@@ -81,7 +76,7 @@ class _HomePageState extends State<HomePage> {
       body: ListView.builder(
         itemBuilder: (BuildContext context, int index) {
           final item = database.toDoList[index];
-          return ToDoTile(
+          return ToDoListView(
             taskName: item[0],
             taskCompleted: item[1],
             onChanged: (value) => checkBoxChanged(value, index),
